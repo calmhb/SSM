@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>easyBuy</display-name>
+	<!-- 声明自定义的servlet标签 -->
+	<servlet>
+		<!-- 自定义 -->
+		<servlet-name>userManager</servlet-name>
+		<!-- 必须对应到一个servlet的全限定名 -->
+		<servlet-class>com.cl.easybuy.action.UserManagerServlet</servlet-class>
+	</servlet>
+	<!-- 定义请求 -->
+	<servlet-mapping>
+		<servlet-name>userManager</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<!-- 自定义 -->
+		<servlet-name>cartManager</servlet-name>
+		<!-- 必须对应到一个servlet的全限定名 -->
+		<servlet-class>com.cl.easybuy.action.CartManagerServlet</servlet-class>
+	</servlet>
+	<!-- 定义请求 -->
+	<servlet-mapping>
+		<servlet-name>cartManager</servlet-name>
+		<url-pattern>*.cart</url-pattern>
+	</servlet-mapping>
+
+	<!-- 声明订单处理的servlet -->
+	<servlet>
+		<servlet-name>orderServlet</servlet-name>
+		<servlet-class>com.cl.easybuy.action.OrderManagerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>orderServlet</servlet-name>
+		<url-pattern>*.order</url-pattern>
+	</servlet-mapping>
+
+	<!-- 声明自定义的过滤器 -->
+	<filter>
+		<filter-name>filteLogin</filter-name>
+		<filter-class>com.cl.easybuy.filter.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>filteLogin</filter-name>
+		<!-- 需要过滤的请求 -->
+		<url-pattern>/order.jsp</url-pattern>
+	</filter-mapping>
+</web-app>
