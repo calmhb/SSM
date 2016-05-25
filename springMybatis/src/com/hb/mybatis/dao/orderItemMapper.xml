@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.mybatis.dao.OrderItemMapper">
+	<!-- <insert id="addItem" parameterType="java.util.ArrayList" keyProperty="id" 
+		useGeneratedKeys="true"> insert into t_order_item(p_id,qty,o_id) values <foreach 
+		collection="list" item="pro" index="index" separator=","> (#{pro.pid},#{pro.qty},#{pro.oid}) 
+		</foreach> </insert> -->
+
+	<insert id="addItem" parameterType="java.util.ArrayList"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into t_order_item(p_id,qty,o_id) values
+		<foreach collection="list" item="orderItem" index="index"
+			separator=",">
+			(#{orderItem.product.id},#{orderItem.qty},#{orderItem.order.id})
+		</foreach>
+	</insert>
+
+	<resultMap type="OrderItem" id="orderMap">
+		<id column="oi_id" property="id" />
+		<result column="oi_qty" property="qty" />
+		<association property="order" javaType="Order">
+			<id column="oi_oid" property="id" />
+		</association>
+		<association property="product" javaType="Product">
+			<id column='oi_pid' property="id" />
+			<result column="p_name" property="name" />
+		</association>
+	</resultMap>
+
+	<select id="findItemsByOid" parameterType="int" resultMap="orderMap">
+		select
+		oi.id as oi_id, oi.o_id as oi_oid,
+		oi.p_id as oi_pid, oi.qty as
+		oi_qty,
+		pro.name as p_name from t_order_item oi,t_product pro where
+		oi.p_id=pro.id and o_id=#{oid}
+	</select>
+
+	
+
+</mapper>

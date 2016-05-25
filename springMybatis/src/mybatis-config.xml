@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 别名 -->
+	<typeAliases>
+
+		<typeAlias type="com.hb.mybatis.entity.User" alias="User" />
+		<typeAlias type="com.hb.mybatis.entity.Order" alias="Order" />
+		<typeAlias type="com.hb.mybatis.entity.Product" alias="Product" />
+		<typeAlias type="com.hb.mybatis.entity.OrderItem" alias="OrderItem" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="com/hb/mybatis/dao/userDaoMapper.xml" />
+		<mapper resource="com/hb/mybatis/dao/orderDaoMapper.xml" />
+		<mapper resource="com/hb/mybatis/dao/productDaoMapper.xml" />
+		<mapper resource="com/hb/mybatis/dao/orderItemMapper.xml" />
+	</mappers>
+
+	
+</configuration>

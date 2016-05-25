@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.2.xsd ">
+
+	<!-- 配置文件参数化 -->
+	<bean id="perpertyHolder"
+		class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="location" value="classpath:mybatis.properties" />
+	</bean>
+
+	<!-- 引入配置文件简化方法 <context:property-placeholder location="classpath:mybatis.properties" 
+		/> -->
+
+	<!-- JNDI方式配置数据源 -->
+	<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
+		<property name="jndiName" value="${jndiName}"></property> </bean> -->
+
+	<!-- 配置数据源 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="${driver}" /> <property name="password" 
+		value="${password}" /> <property name="username" value="${username}" /> <property 
+		name="url" value="${url}" /> </bean> -->
+	<!-- 配置连接池 -->
+	<bean id="dsPool" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+		<property name="acquireIncrement" value="3"></property>
+
+		<!--连接关闭时默认将所有未提交的操作回滚。Default: false -->
+		<property name="autoCommitOnClose" value="false"></property>
+		<!--当连接池用完时客户端调用getConnection()后等待获取新连接的时间，超时后将抛出 SQLException,如设为0则无限期等待。单位毫秒。Default: 
+			0 -->
+		<property name="checkoutTimeout" value='1000'></property>
+		<!--初始化时获取三个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+		<property name="initialPoolSize" value='3' />
+
+		<!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+		<property name="maxIdleTime" value='30' />
+		<!--连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize" value='15' />
+
+		<!-- 连接信息 -->
+		<property name="driverClass" value="${driver}" />
+		<property name="password" value="${password}" />
+		<property name="user" value="${username}" />
+		<property name="jdbcUrl" value="${url}" />
+	</bean>
+
+	<!-- 配置mybatis -->
+	<bean id='sqlSessionFactory' class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 实例化sqlSessionFactory时需要使用配置好的数据源以及SQL映射文件 -->
+		<property name="dataSource" ref="dsPool" />
+		<!-- <property name="mapperLocations" value="classpath:com/hb/mybatis/dao/*.xml"></property> -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+
+	<!-- 配置扫描器:为接口自动创建代理对象,名称为类名的小驼峰写法 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描com.hb.mybatis.dao这个包以及它的子包下的所有的映射接口类 -->
+		<property name="basePackage" value="com.hb.mybatis.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- 定义UserBiz -->
+	<bean id='userBiz' class="com.hb.mybatis.biz.impl.UserBizImpl">
+		<property name="userMapper" ref='userMapper'></property>
+	</bean>
+
+	<bean id="productBiz" class="com.hb.mybatis.biz.impl.ProductBizImpl">
+		<property name="productMapper" ref="productMapper"></property>
+	</bean>
+
+	<bean id="orderBiz" class="com.hb.mybatis.biz.impl.OrderBizImpl">
+		<property name="orderMapper" ref="orderMapper" />
+		<property name="orderItemMapper" ref="orderItemMapper" />
+	</bean>
+
+	<!-- 定义事务管理对象 -->
+	<bean id='transactionManager'
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dsPool"></property>
+	</bean>
+
+	<!-- 注解方式配置事物 -->
+	<!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+
+	<!-- 拦截器方式配置事务 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="SUPPORTS" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置切面 -->
+	<aop:config>
+		<aop:pointcut id='transactionPointcut'
+			expression="execution(* com.hb.mybatis.biz.impl..*Impl.*(..))" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut" />
+	</aop:config>
+
+</beans>

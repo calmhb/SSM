@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义包名 -->
+<mapper namespace="com.hb.mybatis.dao.UserMapper">
+	<!-- 定义属性和字段名之间的对应关系 -->
+	<resultMap type="User" id="orderListMap">
+		<id property='id' column="u_id" />
+		<result property="name" column="u_name" />
+		<result property='pwd' column='u_pwd' />
+		<result property="power" column='u_power' />
+		<collection property="orders" javaType="ArrayList" ofType="Order">
+			<id column="o_id" property="id" />
+			<result column="o_dotime" property="dotime" />
+			<result column="o_account" property="account" />
+		</collection>
+	</resultMap>
+
+	<select id='cascadeByUid' parameterType="int" resultMap="orderListMap">
+		select
+		o.id as o_id,
+		o.u_id as o_uid,
+		o.dotime as o_dotime,
+		o.account as
+		o_account,
+		u.id as u_id,
+		u.name as u_name,
+		u.pwd as u_pwd,
+		u.power as
+		u_power
+		from
+		t_order o,t_user u
+		where o.u_id=u.id and o.u_id=#{uid}
+	</select>
+
+	<!-- 查询操作 -->
+	<select id="count" resultType="int">
+		select count(*) from t_user;
+	</select>
+	<select id="findAll" resultType="User">
+		select id,name,pwd,`power` from
+		t_user
+	</select>
+	<select id="findByName" parameterType="String" resultType="User">
+		select id,name,pwd,`power` from t_user where name=#{name}
+	</select>
+	<select id="findByNameAndPwd" parameterType="User" resultType="User">
+		select id,name,pwd,`power` from t_user where name=#{name}
+		and
+		pwd=md5(#{pwd})
+	</select>
+
+	<!-- 插入更新删除 -->
+	<insert id="inserUser" useGeneratedKeys="true" keyProperty="id"
+		parameterType="User">
+		insert into
+		t_user(name,pwd,`power`)
+		values(#{name},md5(#{pwd}),#{power});
+	</insert>
+
+	<update id="updateUser" parameterType="User">
+		update t_user
+		<set>
+			<if test="name!=null">
+				name=#{name}
+			</if>
+			<if test="pwd!=null">
+				pwd=md5(#{pwd})
+			</if>
+			<if test="power!=null">
+				`power`=#{power}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+
+</mapper>
