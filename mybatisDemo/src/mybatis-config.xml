@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 约束头从mybatis提供的帮助文档中获得 -->
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 别名 -->
+	<typeAliases>
+		<typeAlias type="com.hb.mybatis.entity.User" alias="User" />
+		<typeAlias type="com.hb.mybatis.entity.Order" alias="Order" />
+	</typeAliases>
+	<!-- 配置环境(可以配置多个):设置默认环境为开发环境 -->
+	<environments default="development">
+		<!-- 配置一个环境,为开发环境 -->
+		<environment id="development">
+			<!-- 事务管理类型: |-JDBC直接简单使用了 JDBC 的提交和回滚设置。它依赖于从数据源得到的连接来管理事务范围 |-MANAGED从来不提交或回滚一个连接。而它会让 
+				容器来管理事务的整个生命周期(如 Spring) -->
+			<transactionManager type="JDBC" />
+			<!-- dataSource 元素使用基本的 JDBC 数据源接口来配置 JDBC 连接对象的资源 -->
+			<dataSource type="POOLED">
+				<!-- 使用了配置文件参数化 -->
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<properties></properties>
+	<!-- 引入映射文件 -->
+	<mappers>
+		<mapper resource="com/hb/mybatis/dao/userDaoMapper.xml" />
+		<mapper resource="com/hb/mybatis/dao/orderDaoMapper.xml" />
+	</mappers>
+</configuration>
