@@ -36,7 +36,7 @@ public class LoginController extends BaseController {
 	@RequestMapping("/login-action6.do")
 	// SpringMVC 自动注入参数HttpServletRequest
 	public String checkLogin6(@ModelAttribute("name") String name,
-			@ModelAttribute("password") String pwd, ModelMap model,
+			@ModelAttribute("pwd") String pwd, ModelMap model,
 			HttpServletRequest request) {
 		System.out.println("---方法六---");
 		System.out.println(name + ":" + pwd);
